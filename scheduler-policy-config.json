@@ -6,8 +6,8 @@
 	{"name" : "PodFitsResources"},
 	{"name" : "NoDiskConflict"},
 	{"name" : "NoVolumeZoneConflict"},
-	{"name" : "MatchNodeSelector"},
-	{"name" : "HostName"}
+	{"name" : "PodMatchNodeSelector"},
+	{"name" : "PodFitsHost"}
 	],
 "priorities" : [
 	{"name" : "LeastRequestedPriority", "weight" : 1},
