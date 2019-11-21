@@ -1,14 +1,19 @@
 # k8s-scheduler-extender-example
 This is an example of [Kubernetes Scheduler Extender](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/scheduler_extender.md)
 
+kubernetes cluster is built with [MicroK8s](https://microk8s.io)
+
 ## How to
 
 ### 0. checkout the repo
 
 ```shell
-$ git clone git@github.com:everpeace/k8s-scheduler-extender-example.git
+$ git clone https://github.com/chuyuxuan123/k8s-scheduler-extender-example.git
 $ cd k8s-scheduler-extender-example
-$ git submodule update --init
+$ git clone https://github.com/kubernetes/kubernetes.git
+$ cd kubernetes
+$ git checkout release-1.16
+$ cd ..
 ```
 
 ### 1. buid a docker image
@@ -25,28 +30,30 @@ please see ConfigMap in [extender.yaml](extender.yaml) for scheduler policy json
 
 ```
 # bring up the kube-scheduler along with the extender image you've just built
-$ sed 's/a\/b:c/'$(echo "${IMAGE}" | sed 's/\//\\\//')'/' extender.yaml | kubectl apply -f -
+$ sed 's/a\/b:c/'$(echo "${IMAGE}" | sed 's/\//\\\//')'/' extender.yaml | sudo microk8s.kubectl apply -f -
 ```
 
 For ease of observation, start streaming logs from the extender:
 
 ```console
-$ kubectl -n kube-system logs deploy/my-scheduler -c my-scheduler-extender-ctr -f
-[  warn ] 2018/11/07 08:41:40 main.go:84: LOG_LEVEL="" is empty or invalid, fallling back to "INFO".
-[  info ] 2018/11/07 08:41:40 main.go:98: Log level was set to INFO
-[  info ] 2018/11/07 08:41:40 main.go:116: server starting on the port :80
+$ sudo microk8s.kubectl -n kube-system logs deploy/my-scheduler -c my-scheduler-extender-ctr -f &
 ```
 
-Open up an another termianl and proceed.
+You can see output from the screen.
+
+> [  warn ] 2018/11/07 08:41:40 main.go:84: LOG_LEVEL="" is empty or invalid, fallling back to "INFO".
+[  info ] 2018/11/07 08:41:40 main.go:98: Log level was set to INFO
+[  info ] 2018/11/07 08:41:40 main.go:116: server starting on the port :80
+
 
 ### 3. schedule test pod
 
 you will see `test-pod` will be scheduled by `my-scheduler`.
 
 ```
-$ kubectl create -f test-pod.yaml
+$ sudo microk8s.kubectl create -f test-pod.yaml
 
-$ kubectl describe pod test-pod
+$ sudo microk8s.kubectl describe pod test-pod
 Name:         test-pod
 ...
 Events:
